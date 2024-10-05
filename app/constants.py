@@ -7,6 +7,7 @@ class HttpResponse :
     OK: str = f"{HTTP_VERSION} 200 OK{CRLF*2}"
     NOT_FOUND: str = f"{HTTP_VERSION} 404 Not Found{CRLF*2}"
     
+    #* status code
     responses: dict[int, str] = {
         100: "Continue",
         101 :'Switching Protocols',
