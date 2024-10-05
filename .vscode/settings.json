@@ -1,0 +1,5 @@
+{
+    "python.analysis.typeCheckingMode": "basic",
+    "cSpell.words": ["REUSEADDR"],
+    "python.analysis.autoImportCompletions": true
+}
