@@ -1,12 +1,11 @@
-class Path:
-    path: str
-    type: str | None
 
-    def __init__(self, path: str, type: str | None = None):
-        self.type = type
-        self.path = path
+
+
+from views import echo_view
+from models.path import Path
+
 
 paths: list[Path] = [
-    Path("/"),
-    Path("/echo", type="str"),
+    Path("/",),
+    Path("/echo/{str}", func=echo_view),
 ]

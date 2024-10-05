@@ -1,5 +1,6 @@
 import signal
 import socket
+from models.http_response import HttpResponse, HttpContentType
 from constants import *
 from threading import Thread
 from keyboard import read_key
@@ -33,17 +34,21 @@ def main():
                 if not data:
                     break
 
-                path = data.split(CRLF)[0].split(' ')[1]
-                
-                str_paths = map(lambda p: p.path , paths)
-                if path in str_paths:
-                    client.send(HttpResponse.OK.encode())
-                elif path.split("/").pop(-1).join("/") in str_paths:
-                    ...
-                else: 
-                    client.send(HttpResponse.NOT_FOUND.encode())  
-                
-
+                path_value = data.split(CRLF)[0].split(" ")[1]
+                httpResponse: HttpResponse | None = None
+                for path in paths:
+                    if path.match(path_value):
+                        if path.func is not None:
+                            httpResponse = path.func(path)
+                        else:
+                            httpResponse = HttpResponse(
+                                status_code=200, content_type=HttpContentType.PLAIN_TEXT
+                            )
+                if httpResponse == None:
+                    httpResponse = HttpResponse(
+                        status_code=404, content_type=HttpContentType.PLAIN_TEXT
+                    )
+                client.send(httpResponse.serialize())
 
 if __name__ == "__main__":
     main()

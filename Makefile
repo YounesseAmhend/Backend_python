@@ -7,5 +7,5 @@ test:
 
 git:
 	git add .
-	git commit -m 'test'
+	git commit -m "$(m)"
 	git push origin main
