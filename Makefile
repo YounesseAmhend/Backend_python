@@ -1,5 +1,5 @@
 run: 
-	python app/main.py
+	python app/main.py 
 
 
 test:

@@ -1,14 +1,24 @@
-import signal
 import socket
-from models.http_response import HttpResponse, HttpContentType
-from constants import *
+from handle_request import handle_request
 from threading import Thread
-from keyboard import read_key
-import sys
-from path import paths
+
+# the constants are these 
+#   PORT: int = 4444
+#   HOST: str = "localhost"
+#   CRLF: str = "\r\n"
+#   HTTP_VERSION = "1.1"
+
 
 def check_close(server: socket.socket) -> None:
-    """Continuously check for 'q' to quit the server."""
+    """
+    Monitors for user input to gracefully shut down the server.
+
+    Continuously checks for the 'q' key press. If 'q' is pressed, 
+    the server socket is closed, and the program exits.
+
+    Args:
+        server (socket.socket): The server socket to be closed.
+    """
     while True:
         if read_key() == "q":
             print("Quitting...")
@@ -16,39 +26,41 @@ def check_close(server: socket.socket) -> None:
             sys.exit(0)
 
 
-def main():
+def start_server():
     # Create a server socket
-    with socket.create_server((HOST, PORT), family=socket.AF_INET) as server:
-        print(f"Running on http://{HOST}:{PORT}")
-        server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server.listen(1)
+    server_socket = socket.create_server(("localhost", 4221), reuse_port=False)
 
-        t1 = Thread(target=check_close, args=(server,))
-        t1.daemon = True  
-        t1.start()
+    # Set the SO_REUSEADDR option
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-        while True:
-            client, _ = server.accept()  
-            with client:
-                data: str = client.recv(1024).decode()
-                if not data:
-                    break
+    server_socket.listen(5) 
 
-                path_value = data.split(CRLF)[0].split(" ")[1]
-                httpResponse: HttpResponse | None = None
-                for path in paths:
-                    if path.match(path_value):
-                        if path.func is not None:
-                            httpResponse = path.func(path)
-                        else:
-                            httpResponse = HttpResponse(
-                                status_code=200, content_type=HttpContentType.PLAIN_TEXT
-                            )
-                if httpResponse == None:
-                    httpResponse = HttpResponse(
-                        status_code=404, content_type=HttpContentType.PLAIN_TEXT
-                    )
-                client.send(httpResponse.serialize())
+    ################################################################
+    # t1 = Thread(target=check_close, args=(server,))
+    # t1.daemon = True  
+    # t1.start()
+    ################################################################
+
+    print("Server is running on http://localhost:4221")
+
+    while True:
+        # Wait for a client connection
+        client_socket, address = server_socket.accept()
+        print(f"Connection from {address} has been established.")
+
+        # Receive the request data
+        request_data = client_socket.recv(1024).decode()
+        print(f"Received request:\n{request_data}")
+        
+        # Handle the HTTP request and get the response
+        response = handle_request(request_data)
+        
+        # Send the HTTP response back to the client
+        client_socket.sendall(response.encode("utf-8"))
+        
+        # Close the client connection
+        client_socket.close()
+
 
 if __name__ == "__main__":
-    main()
+    start_server()
