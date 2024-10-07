@@ -1,6 +1,6 @@
 from ftplib import CRLF
-from models.constants import HTTP_VERSION
-from models.path import Path
+from app.models.constants import HTTP_VERSION
+from app.models.path import Path
 
 
 class HttpContentType:

@@ -1,10 +1,10 @@
 import sys
 import socket
-from models.http import HttpResponse, HttpContentType, HttpRequest, RequestHeaders
-from models.constants import *
+from app.models.http import HttpResponse, HttpContentType, HttpRequest, RequestHeaders
+from app.models.constants import *
 from threading import Thread
 from keyboard import read_key
-from urls import paths
+from app.urls import paths
 
 def check_close(server: socket.socket) -> None:
     """Continuously check for 'q' to quit the server."""

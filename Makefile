@@ -1,9 +1,13 @@
 run: 
-	python app/main.py
+	python main.py
 
 
 test:
 	pytest tests.py -q 
+
+hot:
+	python hot_reload.py
+
 
 git:
 	git add .
