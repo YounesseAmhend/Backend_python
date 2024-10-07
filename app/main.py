@@ -51,13 +51,8 @@ def main():
                             http_version=http_version,
                             headers=request_headers,
                         )
-                        if path.func is not None:
-                            httpResponse = path.func(request)
-                        else:
-                            httpResponse = HttpResponse(
-                                status_code=200, content_type=HttpContentType.PLAIN_TEXT
-                            )
-                if httpResponse == None:
+                        httpResponse = path.func(request)
+                if httpResponse == None: #this means the path does not exists
                     httpResponse = HttpResponse(
                         status_code=404, content_type=HttpContentType.PLAIN_TEXT
                     )
