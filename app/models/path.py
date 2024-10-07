@@ -1,16 +1,17 @@
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
-from models.http_response import HttpResponse
+if TYPE_CHECKING:
+    from models.http import HttpRequest, HttpResponse
 
 
 class Path:
     path: str
     value: Any = None
-    func: Callable[[Any], HttpResponse] | None #Any will be in the future HttpRequest
+    func: Callable[["HttpRequest"], "HttpResponse"]
 
-    def __init__(self, path: str, func: Callable | None = None):
+    def __init__(self, path: str, view: Callable):
         self.path = path
-        self.func = func
+        self.func = view
 
     def match(self, request_path: str) -> bool:
         path_parts = self.path.split("/")
@@ -32,5 +33,5 @@ class Path:
 
             elif path_part != request_part:
                 return False
-        
+
         return True

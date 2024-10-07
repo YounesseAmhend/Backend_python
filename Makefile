@@ -3,7 +3,7 @@ run:
 
 
 test:
-	pytest test.py -q 
+	pytest tests.py -q 
 
 git:
 	git add .

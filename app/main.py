@@ -1,11 +1,10 @@
-import signal
+import sys
 import socket
-from models.http_response import HttpResponse, HttpContentType
-from constants import *
+from models.http import HttpResponse, HttpContentType, HttpRequest, RequestHeaders
+from models.constants import *
 from threading import Thread
 from keyboard import read_key
-import sys
-from path import paths
+from urls import paths
 
 def check_close(server: socket.socket) -> None:
     """Continuously check for 'q' to quit the server."""
@@ -34,12 +33,26 @@ def main():
                 if not data:
                     break
 
-                path_value = data.split(CRLF)[0].split(" ")[1]
+                request_str = data.split(CRLF)
+                request_line = request_str[0].split(" ")
+                path_value = request_line[1]
+
+                headersBody = data.split(CRLF)[1:] 
+
                 httpResponse: HttpResponse | None = None
                 for path in paths:
                     if path.match(path_value):
+                        method = request_line[0]
+                        http_version = request_line[2]
+                        request_headers = RequestHeaders(headers=headersBody)
+                        request = HttpRequest(
+                            path=path,
+                            method=method,
+                            http_version=http_version,
+                            headers=request_headers,
+                        )
                         if path.func is not None:
-                            httpResponse = path.func(path)
+                            httpResponse = path.func(request)
                         else:
                             httpResponse = HttpResponse(
                                 status_code=200, content_type=HttpContentType.PLAIN_TEXT

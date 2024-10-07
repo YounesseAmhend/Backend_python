@@ -1,8 +1,7 @@
-import pytest, requests
-from app.constants import *
+from app.models.constants import *
 import socket
 
-from app.constants import HOST, PORT
+from app.models.constants import HOST, PORT
 
 
 def test_stage_1():
@@ -30,12 +29,28 @@ def test_stage_3():
         s.connect((HOST, PORT))
         test_message: str = 'abc'
         s.sendall(f"GET /echo/{test_message} HTTP/1.1\r\nHost: localhost\r\n\r\n".encode())
-        
+
         data: str = s.recv(1024).decode().lower()
 
         assert "HTTP/1.1 200 ok".lower() in data
         assert str(len(test_message)) in data
         assert "abc".lower() in data
+        assert "\r\n\r\n" in data
+
+
+def test_stage_4():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((HOST, PORT))
+        user_agent: str = "foobar/1.2.3"
+        s.sendall(
+            f"GET /user-agent HTTP/1.1\r\nHost: localhost\r\nUser-Agent: {user_agent}\r\nAccept: */*\r\n\r\n".encode()
+        )
+
+        data: str = s.recv(1024).decode().lower()
+
+        assert "HTTP/1.1 200 ok".lower() in data
+        assert str(len(user_agent)) in data
+        assert user_agent.lower() in data
         assert "\r\n\r\n" in data
 
 

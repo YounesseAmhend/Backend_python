@@ -1,10 +1,18 @@
-from models.http_response import HttpContentType, HttpResponse
-from models.path import Path
+from models.http import HttpRequest, HttpResponse
 
+def home_view(request: HttpRequest) -> HttpResponse:
+    return HttpResponse(status_code=200,)
 
-def echo_view(path: Path) -> HttpResponse:
+def echo_view(request: HttpRequest) -> HttpResponse:
     return HttpResponse(
         status_code=200,
-        content_type=HttpContentType.PLAIN_TEXT,
-        body=path.value,
+        body=request.path.value,
+    )
+
+
+def get_user_agent(request: HttpRequest) -> HttpResponse:
+    print(f"Headers {request.headers.user_agent}")
+    return HttpResponse(
+        status_code=200,
+        body=request.headers.user_agent,        
     )
