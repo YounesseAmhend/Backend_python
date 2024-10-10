@@ -8,7 +8,6 @@ test:
 hot:
 	python hot_reload.py
 
-
 git:
 	git add .
 	git commit -m "$(m)"

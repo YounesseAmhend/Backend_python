@@ -1,0 +1,3 @@
+
+
+FILES_DIR = 'static'

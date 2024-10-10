@@ -7,4 +7,5 @@ paths: list[Path] = [
     Path("/echo/{str}", view=echo_view),
     Path("/user-agent", view=get_user_agent),
     Path("/hello", view=hello),
+    Path("/files/{str}", view=handle_files),
 ]

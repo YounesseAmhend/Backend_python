@@ -4,7 +4,8 @@ from app.models.path import Path
 
 
 class HttpContentType:
-    PLAIN_TEXT: str = "text / plain"
+    PLAIN_TEXT: str = "text/plain"
+    FILE: str = "application/octet-stream"
 
 
 class HttpResponse:
@@ -23,7 +24,10 @@ class HttpResponse:
         self.body = body
 
     def serialize(self) -> bytes:
-        return f"HTTP/{HTTP_VERSION} {self.status_code} {self.responses[self.status_code]}{CRLF}Content-Type: {self.content_type}{CRLF}Content-Length: {len(self.body)}{CRLF*2}{self.body}".encode()
+        return f"HTTP/{HTTP_VERSION} {self.status_code} {self.responses[self.status_code]}{CRLF} \
+                Content-Type: {self.content_type}{CRLF} \
+                Content-Length: {len(self.body)}{CRLF*2} \
+                {self.body}".encode()
 
     responses: dict[int, str] = {
         100: "Continue",
@@ -44,7 +48,6 @@ class RequestHeaders:
 
     def __init__(self, headers: list[str]):
         header_len = len(headers)
-        print(headers)
         if header_len > 0:
             self.host = headers[0].split(" ")[1]
         if header_len > 1 and len(headers[1]) > 0:
