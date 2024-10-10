@@ -21,7 +21,6 @@ def main():
     with socket.create_server((HOST, PORT), family=socket.AF_INET) as server:
         print(f"Running on http://{HOST}:{PORT}")
         server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server.listen(1)
 
         t1 = Thread(target=check_close, args=(server,))
         t1.daemon = True  
