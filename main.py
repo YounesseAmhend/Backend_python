@@ -22,9 +22,6 @@ def main():
         print(f"Running on http://{HOST}:{PORT}")
         server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-        t1 = Thread(target=check_close, args=(server,))
-        t1.daemon = True  
-        t1.start()
         while True:
             client, _ = server.accept()  
             threading.Thread(target=handleRequest, args=(client,)).start()
