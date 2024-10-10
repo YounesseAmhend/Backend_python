@@ -85,7 +85,26 @@ def test_stage_6():
         assert str(len(file_content)) in data
         assert file_content.lower() in data
         assert "\r\n\r\n" in data
+
+
+def test_stage_7():
+    FILES_DIR: str = "static"  #! You must replaced if you chose another name
+    FILENAME: str = "test"
+    file_content: str = "Hello World\n"
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((HOST, PORT))
+        s.sendall(f"POST /files/{FILENAME} HTTP/1.1\r\nHost: localhost\r\n\r\n{file_content}".encode())
+
+        data: str = s.recv(1024).decode().lower()
+
+        assert "HTTP/1.1 201 Created".lower() in data
         
+        os.makedirs(FILES_DIR, exist_ok=True)
+        filepath: str = f"{FILES_DIR}/{FILENAME}"
+        with open(filepath, "r") as f:
+            assert f.read() == file_content
+
 def test_get_request():
     response = requests.get(f"http://{HOST}:{PORT}")
     assert response.status_code == 200

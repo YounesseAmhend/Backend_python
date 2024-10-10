@@ -3,7 +3,6 @@ from watchdog.events import FileSystemEventHandler
 import time
 import subprocess
 import sys
-import os
 
 
 class MyHandler(FileSystemEventHandler):

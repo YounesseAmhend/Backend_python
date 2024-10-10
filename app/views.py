@@ -23,20 +23,31 @@ def handle_files(request: HttpRequest) -> HttpResponse:
     filename = request.path.value
     filepath = f"{FILES_DIR}/{filename}"
     print(f"FilePath {filepath}")
-    if not os.path.exists(filepath):
+    if request.method == "GET":
+        if not os.path.exists(filepath):
+            return HttpResponse(
+                status_code=404,
+            )
+        else:
+            filedata: str
+            with open(filepath, "r") as f:
+                filedata = f.read()
+            return HttpResponse(
+                status_code=200,
+                content_type=HttpContentType.FILE,
+                body=filedata,
+            )
+
+    elif request.method == "POST":
+        os.makedirs(FILES_DIR, exist_ok=True)
+        with open(filepath, "w") as f:
+            f.write(request.body)
+        print("Sending")
         return HttpResponse(
-            status_code=404,
+            status_code=201,
         )
     else:
-        filedata: str
-        with open(filepath, "r") as f:
-            filedata = f.read()
-        return HttpResponse(
-            status_code=200,
-            content_type=HttpContentType.FILE,
-            body=filedata,
-        )
-
+        return HttpResponse(status_code=501)
 
 def hello(request: HttpRequest) -> HttpResponse:
     return HttpResponse(

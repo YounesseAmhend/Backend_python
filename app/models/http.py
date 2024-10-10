@@ -33,6 +33,7 @@ class HttpResponse:
         100: "Continue",
         101: "Switching Protocols",
         200: "OK",
+        201: "Created",
         400: "Bad Request",
         401: "Unauthorized",
         404: "Not Found",
@@ -45,13 +46,27 @@ class HttpResponse:
 class RequestHeaders:
     host: str
     user_agent: str
+    accept: str
+    content_type: str
+    content_length: int
 
     def __init__(self, headers: list[str]):
-        header_len = len(headers)
-        if header_len > 0:
-            self.host = headers[0].split(" ")[1]
-        if header_len > 1 and len(headers[1]) > 0:
-            self.user_agent = headers[1].split(" ")[1]
+        for header in headers:
+            if len(header) < 2:
+                continue
+            header_elements = header.split(":")
+            key, value = header_elements[0], header_elements[1].strip()
+            match key:
+                case "Host":
+                    self.host = value
+                case "User-Agent":
+                    self.user_agent = value
+                case "Accept":
+                    self.accept = value
+                case "Content-Type":
+                    self.content_type = value
+                case "Content-Length":
+                    self.content_length = int(value)
 
     def __str__(self) -> str:
         return f"host {self.host} user agent {self.user_agent}"
@@ -74,9 +89,10 @@ class HttpRequest:
     method: str
     http_version: str
     headers: RequestHeaders
+    body: str
 
     def __init__(
-        self, path: Path, method: str, http_version: str, headers: RequestHeaders
+        self, path: Path, method: str, http_version: str, headers: RequestHeaders, body: str = ''
     ) -> None:
         if method not in self.httpMethods:
             raise Exception(
@@ -86,3 +102,4 @@ class HttpRequest:
         self.method = method
         self.http_version = http_version
         self.headers = headers
+        self.body = body
