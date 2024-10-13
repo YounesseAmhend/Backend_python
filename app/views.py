@@ -1,6 +1,7 @@
 import os
 from app.config import FILES_DIR
 from app.models.http import HttpContentType, HttpRequest, HttpResponse
+from app.models.utils import json_response, render_file
 
 def home_view(request: HttpRequest) -> HttpResponse:
     return HttpResponse(status_code=200)
@@ -50,7 +51,18 @@ def handle_files(request: HttpRequest) -> HttpResponse:
         return HttpResponse(status_code=501)
 
 def hello(request: HttpRequest) -> HttpResponse:
-    return HttpResponse(
-        status_code=200,
-        body='Hello World!'
+    return render_file("hello.html")
+
+
+def json_test(request: HttpRequest) -> HttpResponse:
+    return json_response(
+        {
+            "age": 24,
+            "name": "name",
+        }
+    )
+
+def img(request: HttpRequest)->HttpResponse:
+    return render_file(
+        filename="img.png"
     )

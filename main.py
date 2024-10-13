@@ -6,6 +6,7 @@ from app.models.constants import *
 from threading import Thread
 from keyboard import read_key
 from app.urls import paths
+from app.config import *
 
 def check_close(server: socket.socket) -> None:
     """Continuously check for 'q' to quit the server."""

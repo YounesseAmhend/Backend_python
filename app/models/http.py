@@ -6,40 +6,63 @@ from app.models.path import Path
 class HttpContentType:
     PLAIN_TEXT: str = "text/plain"
     FILE: str = "application/octet-stream"
+    HTML: str = "text/html"
+    JSON: str = "application/json"
+    XML: str = "application/xml"
+    FORM_URLENCODED: str = "application/x-www-form-urlencoded"
+    MULTIPART_FORM_DATA: str = "multipart/form-data"
+    JPEG: str = "image/jpeg"
+    PNG: str = "image/png"
+    GIF: str = "image/gif"
+    PDF: str = "application/pdf"
+    ZIP: str = "application/zip"
+    CSV: str = "text/csv"
+    JAVASCRIPT: str = "application/javascript"
+    CSS: str = "text/css"
 
 
 class HttpResponse:
     status_code: int
     content_type: str
-    body: str
+    body: str | bytes
 
     def __init__(
         self,
         status_code: int,
         content_type: str = HttpContentType.PLAIN_TEXT,
-        body: str = "",
+        body: str | bytes = "",
     ):
         self.status_code = status_code
         self.content_type = content_type
         self.body = body
 
     def serialize(self) -> bytes:
-        return f"HTTP/{HTTP_VERSION} {self.status_code} {self.responses[self.status_code]}{CRLF} \
-                Content-Type: {self.content_type}{CRLF} \
-                Content-Length: {len(self.body)}{CRLF*2} \
-                {self.body}".encode()
+        """Serialize the response object into a valid HTTP response byte sequence."""
+        body_bytes = self.body.encode() if isinstance(self.body, str) else self.body
+        return (
+            f"HTTP/{HTTP_VERSION} {self.status_code} {self.responses.get(self.status_code, 'Unknown')}{CRLF}"
+            f"Content-Type: {self.content_type}{CRLF}"
+            f"Content-Length: {len(body_bytes)}{CRLF}"
+            f"{CRLF}"
+        ).encode() + body_bytes
 
     responses: dict[int, str] = {
         100: "Continue",
         101: "Switching Protocols",
         200: "OK",
         201: "Created",
+        204: "No Content",
+        301: "Moved Permanently",
+        302: "Found",
+        304: "Not Modified",
         400: "Bad Request",
         401: "Unauthorized",
+        403: "Forbidden",
         404: "Not Found",
         500: "Internal Server Error",
         501: "Not Implemented",
         502: "Bad Gateway",
+        503: "Service Unavailable",
     }
 
 
